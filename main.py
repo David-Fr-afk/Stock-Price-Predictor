@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-data = yf.download('AAPL', start='2015-01-01', end='2025-01-09')
+data = yf.download('AAPL', interval='1d', start='2023-01-01', end='2023-12-31')
 
 data_close = data[['Close']]
 
