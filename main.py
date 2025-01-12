@@ -13,4 +13,3 @@ data['Signal_Line'] = data['MACD'].ewm(span=9, adjust=False).mean()
 
 print(data[['Close', 'EMA_12', 'EMA_26', 'MACD', 'Signal_Line']].head())
 
-data_close.dropna(inplace=True)
