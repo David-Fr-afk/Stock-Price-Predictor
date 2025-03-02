@@ -24,9 +24,9 @@ def calculate_rsi(data, column='Close', window=14):
 
 
 
-data = yf.download('AAPL', interval='1d', start='2022-10-01', end='2024-12-31')
+data = yf.download('AAPL', interval='1d', start='2023-10-01', end='2024-10-31')
 data.index = pd.to_datetime(data.index)
-data = data.asfreq('B')
+data = data.asfreq('B').ffill() 
 data_close = data[['Close']]
 
 
@@ -45,7 +45,7 @@ data['Action'] = 'Hold'
 data.loc[data['Buy_Signal'], 'Action'] = 'Buy'
 data.loc[data['Sell_Signal'], 'Action'] = 'Sell'
 
-p, d, q = 2, 1, 2  # Just testing with arbitrary values
+p, d, q = 2, 1, 2  
 
 arima_model = ARIMA(data['Close'], order=(2,1,2))
 arima_result = arima_model.fit()
@@ -53,12 +53,11 @@ arima_result = arima_model.fit()
 forecast_steps = 60
 forecast = arima_result.forecast(steps=forecast_steps)
 
-forecast_dates = pd.date_range(start=data.index[-1], periods=forecast_steps + 1, freq='D')[1:]
+forecast_start_date = data.index[-1]  
+forecast_dates = pd.date_range(start=forecast_start_date, periods=forecast_steps + 1, freq='D')[1:]
 forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecasted_Close': forecast})
 forecast_df['Smoothed_Close'] = forecast_df['Forecasted_Close'].rolling(window=10).mean()
 
-print("\nLast 5 days of data:")
-print(data[['Close', 'MACD', 'Signal_Line', 'RSI', 'Buy_Signal', 'Sell_Signal', 'Action']].tail())
 
-print("\nForecasted Prices for Next 60 Days:")
+print(data[['Close', 'MACD', 'Signal_Line', 'RSI', 'Buy_Signal', 'Sell_Signal', 'Action']].tail())
 print(forecast_df.tail(30))  
